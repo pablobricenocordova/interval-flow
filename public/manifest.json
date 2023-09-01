@@ -1,7 +1,7 @@
 {
   "name": "Interval Flow",
   "short_name": "Interval Flow",
-  "theme_color": "#ffffff",
+  "theme_color": "#373e60",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
@@ -28,5 +28,5 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000"
+  "background_color": "#373e60"
 }
