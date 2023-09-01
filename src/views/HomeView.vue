@@ -1,25 +1,47 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+    <img src="@/assets/logo.png" alt="" />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
 export default {
   name: "HomeView",
-  components: {
-    HelloWorld,
-  },
 };
 </script>
 
 <style lang="scss" scoped>
-img {
-  max-width: 200px;
-  height: auto;
+.home {
+  width: 125px;
+  height: 125px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #fff;
+  img {
+    max-width: 75px;
+    height: auto;
+    animation: heartbeat 3s infinite reverse;
+  }
+}
+
+@keyframes heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40%,
+  45% {
+    transform: scale(1.2);
+  }
+  50%,
+  55% {
+    transform: scale(1);
+  }
+  90%,
+  95% {
+    transform: scale(1.2);
+  }
 }
 </style>

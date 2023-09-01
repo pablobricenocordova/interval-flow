@@ -1,30 +1,42 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
   <router-view />
 </template>
 
+<script>
+export default {
+  created() {
+    this.calcVH(); // Llamar a la función al crear el componente
+    window.addEventListener("resize", this.calcVH); // Escuchar cambios de tamaño de ventana
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.calcVH); // Eliminar el listener antes de destruir el componente
+  },
+  methods: {
+    calcVH() {
+      const vH = Math.max(
+        document.documentElement.clientHeight,
+        window.innerHeight || 0
+      );
+      document
+        .getElementById("app")
+        .setAttribute("style", `min-height: ${vH}px;`);
+    },
+  },
+};
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-
-nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+#app {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #373e60;
 }
 </style>
