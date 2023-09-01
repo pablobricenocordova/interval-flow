@@ -1,2 +1,0 @@
-"use strict";(self["webpackChunkinterval_flow"]=self["webpackChunkinterval_flow"]||[]).push([[443],{833:function(n,t,a){a.r(t),a.d(t,{default:function(){return f}});var e=a(3396);const r={class:"about"},u=(0,e._)("h1",null,"This is an about page",-1),s=[u];function i(n,t){return(0,e.wg)(),(0,e.iD)("div",r,s)}var l=a(89);const c={},o=(0,l.Z)(c,[["render",i]]);var f=o}}]);
-//# sourceMappingURL=about.ea75b8b7.js.map
