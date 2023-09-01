@@ -16,3 +16,10 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+img {
+  max-width: 200px;
+  height: auto;
+}
+</style>
