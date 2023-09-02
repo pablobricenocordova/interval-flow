@@ -26,17 +26,28 @@ export default {
 </script>
 
 <style lang="scss">
-body {
+:root {
+  --shadow: 0 -15px 15px rgba(255, 255, 255, 0.05),
+    inset 0 -15px 15px rgba(255, 255, 255, 0.05),
+    0 15px 15px rgba(0, 0, 0, 0.05), inset 0 15px 15px rgba(0, 0, 0, 0.05);
+}
+/* Default styles reset */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+  font-family: DM SANS, sans-serif;
 }
 #app {
   width: 100%;
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
   background-color: #373e60;
 }
 </style>
