@@ -45,9 +45,9 @@ export default {
 }
 #app {
   width: 100%;
-  min-height: 100vh;
   display: flex;
   justify-content: center;
   background-color: #373e60;
+  overflow: hidden;
 }
 </style>

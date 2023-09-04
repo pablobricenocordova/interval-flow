@@ -20,6 +20,11 @@
           <div
             class="container__header--config"
             @click="isConfigActive = !isConfigActive"
+            :style="
+              this.estaDescansando || this.estaTrabajando
+                ? 'pointer-events: none'
+                : ''
+            "
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -47,6 +52,61 @@
             <div class="clock__details--series">
               <p>{{ seriesTrabajadas }}/{{ seriesTotales }}</p>
             </div>
+          </div>
+          <div class="progress__bar">
+            <svg
+              width="160"
+              height="160"
+              viewBox="0 0 160 160"
+              style="transform: rotate(-90deg)"
+            >
+              <defs>
+                <linearGradient
+                  id="miGradiente"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="0%"
+                >
+                  <stop
+                    offset="0%"
+                    style="stop-color: rgb(255, 0, 0); stop-opacity: 1"
+                  />
+                  <stop
+                    offset="100%"
+                    style="stop-color: rgb(255, 255, 0); stop-opacity: 1"
+                  />
+                </linearGradient>
+              </defs>
+              <circle
+                r="70"
+                cx="80"
+                cy="80"
+                fill="transparent"
+                stroke="#e0e0e0"
+                stroke-width="7px"
+              ></circle>
+              <circle
+                v-if="temporizadorActivo"
+                r="70"
+                cx="80"
+                cy="80"
+                fill="transparent"
+                stroke="url(#miGradiente)"
+                stroke-linecap="round"
+                stroke-width="8px"
+                :style="{
+                  'stroke-dasharray': '439.6px',
+                  'stroke-dashoffset': strokeDashOffset + 'px',
+                }"
+                :class="{ 'barra-progreso': tiempoRestante < tiempoTrabajo }"
+                :animate="{
+                  animation: 'fillProgress',
+                  duration: tiempoTrabajo + 's',
+                  fillMode: 'forwards',
+                }"
+              ></circle>
+            </svg>
           </div>
         </div>
         <div
@@ -273,18 +333,19 @@ export default {
   name: "HomeView",
   data() {
     return {
+      strokeDashOffset: 439.6,
       contadorComenzar: 0,
       isConfigActive: false,
-      tiempoTrabajo: 3, // Duración inicial del trabajo en segundos
-      tiempoDescanso: 1, // Duración inicial del descanso en segundos
+      tiempoTrabajo: 5, // Duración inicial del trabajo en segundos
+      tiempoDescanso: 5, // Duración inicial del descanso en segundos
       seriesTotales: 4, // Número de series
       estaTrabajando: false, // Bandera para controlar si está en tiempo de trabajo
       seriesTrabajadas: 0,
       tiempoRestante: 0,
       temporizadorActivo: false,
       estaDescansando: false,
-      readySound: new Audio(require("@/assets/sounds/beep.mp3")),
-      bongSound: new Audio(require("@/assets/sounds/bong.mp3")),
+      readySound: new Audio(require("@/assets/sounds/ready.mp3")),
+      bongSound: new Audio(require("@/assets/sounds/start.mp3")),
       winnerSound: new Audio(require("@/assets/sounds/winner.mp3")),
       workSound: new Audio(require("@/assets/sounds/work.mp3")),
       restSound: new Audio(require("@/assets/sounds/rest.mp3")),
@@ -295,7 +356,7 @@ export default {
       this.isConfigActive = false;
       this.estaTrabajando = true;
       this.tiempoRestante = this.tiempoTrabajo; // Configura el primer intervalo de trabajo
-      this.contadorComenzar = 5; // Inicializa el contador en 5
+      this.contadorComenzar = 5; // Inicializa el contador en;
 
       this.temporizadorActivo = true; // Iniciar el temporizador
 
@@ -375,23 +436,22 @@ export default {
       this.temporizadorActivo = true;
       // Lógica para iniciar el temporizador aquí
     },
-
     pausarTemporizador() {
       this.temporizadorActivo = false;
       // Lógica para pausar el temporizador aquí
     },
-
     reiniciarTemporizador() {
+      this.strokeDashOffset = 439.6;
       this.contadorComenzar = 0;
       this.isConfigActive = false;
-      this.tiempoTrabajo = 3; // Duración inicial del trabajo en segundos
-      this.tiempoDescanso = 1; // Duración inicial del descanso en segundos
-      this.seriesTotales = 4; // Número de series
-      this.estaTrabajando = false; // Bandera para controlar si está en tiempo de trabajo
+      this.tiempoTrabajo = 5;
+      this.tiempoDescanso = 5;
+      this.seriesTotales = 4;
+      this.estaTrabajando = false;
       this.seriesTrabajadas = 0;
       this.tiempoRestante = 0;
       this.temporizadorActivo = false;
-      this.estaDescansando = false; // Bandera para controlar si está en tiempo de descanso
+      this.estaDescansando = false;
     },
   },
   computed: {
@@ -401,8 +461,14 @@ export default {
       } else if (this.estaDescansando) {
         return "descanso";
       } else {
-        return "finalizado";
+        return "iniciar";
       }
+    },
+  },
+  watch: {
+    tiempoRestante(newValue) {
+      // Calcula el nuevo valor de strokeDashOffset en función del tiempo restante
+      this.strokeDashOffset = (newValue / this.tiempoTrabajo) * 439.6; // Ajusta según tus necesidades
     },
   },
 };
@@ -411,6 +477,9 @@ export default {
 <style lang="scss" scoped>
 .home {
   width: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
 }
 
 .container {
@@ -449,7 +518,13 @@ export default {
     h2 {
       color: #fff;
       font-weight: 600;
+      font-family: "Berkshire Swash", cursive;
+      letter-spacing: 2px;
     }
+  }
+
+  &--config {
+    cursor: pointer;
   }
 }
 
@@ -536,11 +611,13 @@ export default {
     position: absolute;
     right: 24px;
     top: 12px;
+    cursor: pointer;
   }
 }
 
 .config__options {
   width: 100%;
+  max-width: 500px;
   padding-inline: 24px;
   margin-top: 3rem;
   display: flex;
@@ -586,6 +663,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 
   &:active {
     border-color: rgba(255, 255, 255, 0.05);
@@ -605,6 +683,7 @@ export default {
     border-radius: 12px;
     background-color: transparent;
     padding: 0.5rem 1.5rem;
+    cursor: pointer;
 
     span {
       color: #fff;
@@ -668,7 +747,7 @@ export default {
 }
 .slide-fade-enter, .slide-fade-leave-to /* .slide-fade-leave-active in <2.1.8 */ {
   opacity: 0;
-  transform: translateY(-20px);
+  transform: scale(1.5);
 }
 
 .row {
@@ -700,5 +779,100 @@ export default {
 
 .input:checked ~ .btn {
   box-shadow: inset 21px 21px 21px #262a42, inset -21px -21px 21px #6470ae;
+}
+
+.progress__bar {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  transform: translate(50%, 50%);
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.barra-progreso {
+  transition: stroke-dashoffset 0.5s ease-in-out;
+  animation-timing-function: linear;
+}
+
+/* Define una animación para la barra de progreso */
+@keyframes fillProgress {
+  0% {
+    stroke-dashoffset: 439.6px; /* Valor inicial */
+  }
+  20% {
+    stroke-dashoffset: 352px; /* Valor inicial */
+  }
+  40% {
+    stroke-dashoffset: 264px; /* Valor inicial */
+  }
+  60% {
+    stroke-dashoffset: 176px; /* Valor inicial */
+  }
+  80% {
+    stroke-dashoffset: 88px; /* Valor inicial */
+  }
+  100% {
+    stroke-dashoffset: 0; /* Valor final */
+  }
+}
+
+@media (max-width: 375px) and (max-height: 667px) {
+  .config {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: scroll;
+
+    &__footer {
+      button {
+        margin-bottom: 24px;
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .container__header {
+    margin-bottom: 6rem;
+
+    h2 {
+      font-size: 30px;
+    }
+
+    .back-btn img {
+      width: 50px;
+      height: 50px;
+    }
+
+    svg {
+      width: 45px;
+      height: 45px;
+    }
+  }
+
+  .config__header {
+    h3 {
+      font-size: 26px;
+    }
+  }
+  .container__clock {
+    width: 350px;
+    height: 350px;
+
+    svg {
+      width: 285px;
+      height: 285px;
+    }
+  }
+
+  .row .btn {
+    width: 75px;
+    height: 75px;
+  }
 }
 </style>

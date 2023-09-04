@@ -10,25 +10,25 @@ if (process.env.NODE_ENV === "production") {
           "For more details, visit https://goo.gl/AFskqB"
       );
     },
-    registered() {
+    registered(registration) {
       console.log("Service worker has been registered.");
+      // Comprueba si hay una nueva versión disponible en el servidor.
+      registration.update();
     },
-    cached() {
-      console.log("Content has been cached for offline use.");
-    },
-    updatefound() {
-      console.log("New content is downloading.");
-    },
-    updated() {
+    updated(registration) {
       console.log("New content is available; please refresh.");
-    },
-    offline() {
-      console.log(
-        "No internet connection found. App is running in offline mode."
-      );
+      // Activa la nueva versión del service worker.
+      registration.waiting.postMessage({ action: "skipWaiting" });
     },
     error(error) {
       console.error("Error during service worker registration:", error);
     },
+  });
+
+  // Escucha mensajes del service worker y fuerza la recarga cuando sea necesario.
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    if (event.data.action === "skipWaiting") {
+      window.location.reload(true);
+    }
   });
 }
